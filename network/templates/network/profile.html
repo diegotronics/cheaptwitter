@@ -1,0 +1,18 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+{% if username %}
+<h1>{{ username }}</h1>
+<h6>{{ following }} Following</h6>
+<h6>{{ followers }} Followers</h6>
+{% if user.is_authenticated and user.username != username %}
+{% if followed %}
+<a class="btn btn-primary" href="{% url 'unfollow' username %}">Unfollow</a>
+{% else %}
+<a class="btn btn-primary" href="{% url 'follow' username %}">Follow</a>
+{% endif %}
+{% endif %}
+{% else %}
+<h1 class="text-center">Sorry this page does not exist</h1>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,117 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>{% block title %}Social Network{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'index' %}">ThisIsNotACheapCopyOfTwitter.com</a>
+
+        <div>
+            <ul class="navbar-nav mr-auto">
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link"
+                        href="{% url 'profile' user.username %}"><strong>{{ user.username }}</strong></a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'index' %}">All Posts</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'following' %}">Following</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}">Register</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="body container">
+        {% block body %}
+        {% endblock %}
+
+        {% if page_obj %}
+        <div id="all-posts">
+            {% for post in page_obj %}
+            <div class="card mt-2">
+                <div class="card-body">
+                    {% if user.username == post.username %}
+                    <a class="edit float-right" id="{{ post.id }}" href="#">Edit</a>
+                    {% endif %}
+                    <h6 class="card-title"><a href="{% url 'profile' post.username %}">@{{post.username}}</a>
+                    </h6>
+                    <div id="content-{{ post.id }}">{{post.content}}</div>
+                    <div><span class="text-muted">{{post.date}}</span></div>
+                    <div>
+                        {% if user.is_authenticated %}
+                        <a class="like" href="#"><i id="liked-{{ post.id }}" class="fa fa-heart {% if post.likes.liked %}text-danger{% else %}text-dark{% endif %}"></i></a>
+                        {% else %}
+                        <span><i id="liked-{{ post.id }}" class="fa fa-heart text-dark"></i></span>
+                        {% endif %}
+                        <span id="count-{{ post.id }}">{{ post.likes.count }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ page_obj.prevoius_page_number }}">Previous</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    {% endif %}
+                    {% for i in page_obj.paginator.page_range %}
+                    {% if page_obj.number == i %}
+                    <li class="page-item active"><span class="page-link">{{ i }} <span
+                                class="sr-only">(current)</span></span>
+                    </li>
+                    {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">Next</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+
+
+        <script src="{% static 'network/index.js' %}"></script>
+        <script type="text/javascript">
+            var csrftoken = '{% csrf_token %}';
+        </script>
+        {% endif %}
+    </div>
+</body>
+
+</html>
