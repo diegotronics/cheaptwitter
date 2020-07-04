@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
             textarea.value = content.innerHTML;
 
             let save = document.createElement("button");
-            save.setAttribute('type', 'submit');
             save.classList.add('btn');
             save.classList.add('btn-primary');
             save.classList.add('my-2');
