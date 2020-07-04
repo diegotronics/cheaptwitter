@@ -29,10 +29,10 @@ document.addEventListener('DOMContentLoaded', function () {
             form.insertAdjacentHTML('afterbegin', csrftoken)
             form.appendChild(textarea)
             form.appendChild(input_id)
-            form.appendChild(save)
-
+            
             content.innerHTML = "";
             content.appendChild(form);
+            content.appendChild(save);
 
             document.getElementById('save-' + post_id).addEventListener('click', function (e) {
                 e.preventDefault()
